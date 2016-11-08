@@ -16,6 +16,8 @@ class FrenchDeck:
     def __getitem__(self, position):
         return self._cards[position]
 
+suit_values = dict(Spades=3, Hearts=2, Diamonds=1, Clubs=0)
 
-fd = FrenchDeck
-print(len(fd))
+def spades_high(card):
+    rank_value = FrenchDeck.ranks.index(card.rank)
+    return rank_value * len(suit_values) + suit_values[card.suit]
