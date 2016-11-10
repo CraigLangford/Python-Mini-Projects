@@ -19,7 +19,7 @@ nnoremap <silent> <F3> :!clear;python3 %<CR>
 
 " Enable folding
 set foldmethod=indent
-set foldlevel=99
+set foldlevel=79
 
 " Enable folding with the spacebar
 nnoremap <space> za
@@ -48,6 +48,10 @@ let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 Plug 'scrooloose/syntastic'
+let g:syntastic_python_python_exec='/usr/bin/python3'
+let g:syntastic_python_flake8_exe='python3 -m flake8'
+let g:syntastic_check_on_open=1
+
 Plug 'nvie/vim-flake8'
 let python_highlight_all=1
 
@@ -58,12 +62,12 @@ Plug 'jistr/vim-nerdtree-tabs'
 
 Plug 'kien/ctrlp.vim'
 
-
 set nu
 
 Plug 'tpope/vim-fugitive'
 call plug#end()
 filetype plugin indent on    " required
+
 
 set background=dark
 syntax enable
