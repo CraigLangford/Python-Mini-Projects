@@ -36,6 +36,7 @@ DJANGO_APPS = (
     'django.contrib.admin',
 )
 THIRD_PARTY_APPS = (
+    'phonenumber_field',  # Phonenumber formating
     'crispy_forms',  # Form layouts
     'allauth',  # registration
     'allauth.account',  # registration
@@ -46,7 +47,7 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     # custom users app
     'phonebook_project.users.apps.UsersConfig',
-    # Your stuff: custom apps go here
+    'phonebook_project.phonebook.apps.PhoneBookConfig',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
