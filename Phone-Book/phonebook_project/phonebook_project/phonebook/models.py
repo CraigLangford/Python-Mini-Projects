@@ -1,12 +1,17 @@
 from django.db import models
-from phonenumber_field.modelfields import PhoneNumberField
+
+
+class BookManager(models.Manager):
+    def create_book(self):
+        book = self.create()
+        return book
+
 
 class Book(models.Model):
-    text = models.TextField(default='')
-    pass
+    books = BookManager()
+
 
 class Contact(models.Model):
-    first_name = models.TextField(default='', max_length=255)
-    last_name = models.TextField(default='', max_length=255)
-    phone_number = PhoneNumberField()
+    name = models.TextField(default='', max_length=255)
+    phone_number = models.TextField(default='', max_length=15)
     book = models.ForeignKey(Book, default='')

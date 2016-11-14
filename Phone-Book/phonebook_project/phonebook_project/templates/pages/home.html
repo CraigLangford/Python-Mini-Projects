@@ -2,10 +2,20 @@
 
 {% block content %}
 <h1>Phonebook</h1><br>
-<table id="id_phonebook_table" class="table">
-    <tr>
-        <td><h2>Name</h2></td>
-        <td><h2>Phone Number</h2></td>
-    </tr>
+<table id="id_phonebook_table" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    {% block table %}{% endblock table %}
 </table>
+<button type="button" class="btn btn-primary" data-toggle="modal"
+        href="#form-modal">
+    Create New Contact
+</button>
+{% include "phonebook/contact.html" %}
 {% endblock %}

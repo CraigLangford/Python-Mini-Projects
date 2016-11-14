@@ -36,4 +36,5 @@ class TableAndItemsModelTest(TestCase):
         self.assertEqual(second_saved_contact.phone_number, "+331232345678")
         self.assertEqual(second_saved_contact.book, book)
         
-        
+class PhonebookViewTest(TestCase):
+

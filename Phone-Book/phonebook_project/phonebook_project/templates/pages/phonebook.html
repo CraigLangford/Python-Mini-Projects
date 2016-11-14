@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Phonebook</h1><br>
+<table id="id_phonebook_table" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    {% for contact, form in contacts_and_formset %}
+        <tr>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.phone_number }}</td>
+	    {% include "phonebook/edit_contact.html" with id=contact.id %}
+                <td><button type="button" class="btn btn-secondary" data-toggle="modal"
+                                            data-target="#{{ contact.id }}" >
+                                                                    
+                Edit  
+                </button></td>
+		<td><a role="button" class="btn btn-danger"
+					      href={% url "delete_contact" book_id contact.id %} > 
+					      Delete
+                </a></td>
+        </tr>
+    {% endfor %}
+</table>
+<button type="button" class="btn btn-primary" data-toggle="modal"
+        href="#form-modal">
+    Create New Contact
+</button>
+{% include "phonebook/contact.html" %}
+{% endblock %}
