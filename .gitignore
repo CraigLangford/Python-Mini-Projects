@@ -4,4 +4,4 @@ __pycache__/
 *.pot
 db.sqlite3
 env/
-*.sw[co]
+*.sw[op]
