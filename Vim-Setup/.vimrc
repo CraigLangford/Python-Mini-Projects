@@ -23,6 +23,13 @@ nnoremap <C-N> :vne<CR>
 nnoremap th :bp<CR>
 nnoremap tl :bn<CR>
 
+" Tab closing
+Plug 'moll/vim-bbye'
+
+" Remap \wq and \q for only closing buffer
+nnoremap twq :w<bar>Bdelete<CR>
+nnoremap tq :Bdelete<CR>
+
 " Enable folding
 set foldlevel=50
 
@@ -149,8 +156,6 @@ set background=dark
 syntax enable
 colorscheme solarized
 
-cnoreabbrev wq w<bar>bd
-cnoreabbrev q bd
 
 set modelines=0
 set nomodeline 
