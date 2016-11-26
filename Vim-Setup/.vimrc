@@ -1,5 +1,8 @@
 cd ~/GitHub
 
+" Auto reload .vimrc
+autocmd! bufwritepost .vimrc source %
+
 set nocompatible               " required
 filetype on 		       " required
 
@@ -16,12 +19,19 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
+nnoremap tt <C-W><C-V>
+
 " New tab split
 nnoremap <C-N> :vne<CR>
 
 " Tab navigations
 nnoremap th :bp<CR>
 nnoremap tl :bn<CR>
+
+" Autosave
+noremap <C-Z> :update<CR>
+vnoremap <C-Z> <C-C>:update<CR>
+inoremap <C-Z> <C-O>:update<CR>
 
 " Tab closing
 Plug 'moll/vim-bbye'
