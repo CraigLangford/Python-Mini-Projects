@@ -1,7 +1,7 @@
 set lines=999 columns=999
 set guioptions -=T
 
-set guifont=Droid\ Sans\ Mono\ for\ Powerline\ \Regular\ 11
+set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ Book\ 11.5
 
 let g:airline_powerline_fonts = 1 
 
