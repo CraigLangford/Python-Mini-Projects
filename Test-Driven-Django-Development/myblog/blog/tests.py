@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django_webtest import WebTest
 from django.contrib.auth import get_user_model
+from django.template import Template, Context
 
 from .forms import CommentForm
 from .models import Entry, Comment
@@ -161,3 +162,15 @@ class CommentFormTest(TestCase):
             'email': ['This field is required.'],
             'body': ['This field is required.'],
         })
+
+class EntryHistoryTagTest(TestCase):
+    
+    TEMPLATE = Template("{% load blog_tags %} {% entry_history %}")
+
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='zoidberg')
+
+    def test_entry_shows_up(self):
+        entry = Entry.objects.create(author=self.user, title="My entry title")
+        rendered = self.TEMPLATE.render(Context())
+        self.assertIn(entry.title, rendered)
