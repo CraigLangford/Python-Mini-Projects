@@ -188,6 +188,13 @@ let g:NERDCompactSexyComs = 1
 " Align line-wise comment delimiters flush left instead of following code indentation
 let g:NERDDefaultAlign = 'left'
 
+" Easy grep! No more need for fancy searches
+Plug 'dkprice/vim-easygrep'
+let g:EasyGrepCommand=1
+let g:EasyGrepRecursive=1
+let g:EasyGrepDefaultUserPattern="*.py *.html"
+let g:EasyGrepMode='User' 
+
 call plug#end()
 
 " Change colorscheme
