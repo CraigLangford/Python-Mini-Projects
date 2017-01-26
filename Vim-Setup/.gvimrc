@@ -38,4 +38,4 @@ let g:airline_symbols.linenr = ''
 
 exec 'hi SyntasticErrorSign guifg=red ctermfg=red' .
             \' guibg=' . synIDattr(synIDtrans(hlID('SignColumn')), 'bg', 'gui') .
-			            \' ctermbg=' . synIDattr(synIDtrans(hlID('SignColumn')), 'bg', 'cterm')
+			            \' ctermbg=NONE' . synIDattr(synIDtrans(hlID('SignColumn')), 'bg', 'cterm')
