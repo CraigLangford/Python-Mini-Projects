@@ -1,7 +1,10 @@
+import datetime
+
 from django.test import TestCase
 from django_webtest import WebTest
 from django.contrib.auth import get_user_model
 from django.template import Template, Context
+from django.template.defaultfilters import slugify
 
 from .forms import CommentForm
 from .models import Entry, Comment
@@ -97,6 +100,23 @@ class EntryViewTest(WebTest):
         page = page.form.submit()
         self.assertRedirects(page, self.entry.get_absolute_url())
 
+    def test_url(self):
+        title = "This is my test title"
+        today = datetime.date.today()
+        entry = Entry.objects.create(title=title, body="body", author=self.user)
+        slug = slugify(title)
+        url = "/{year}/{month}/{day}/{pk}-{slug}/".format(
+                year=today.year,
+                month=today.month,
+                day=today.day,
+                slug=slug,
+                pk=entry.pk,
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                template_name='blog/entry_detail.html')
+
 
 class CommentModelTest(TestCase):
 
@@ -174,3 +194,14 @@ class EntryHistoryTagTest(TestCase):
         entry = Entry.objects.create(author=self.user, title="My entry title")
         rendered = self.TEMPLATE.render(Context())
         self.assertIn(entry.title, rendered)
+        
+    def test_no_posts(self):
+        rendered = self.TEMPLATE.render(Context())
+        self.assertIn("No recent entries", rendered)
+
+    def test_many_posts(self):
+        for n in range(6):
+            Entry.objects.create(author=self.user, title="Post #{0}".format(n))
+        rendered = self.TEMPLATE.render(Context())
+        self.assertIn("Post #4", rendered)
+        self.assertNotIn("Post #5", rendered)
