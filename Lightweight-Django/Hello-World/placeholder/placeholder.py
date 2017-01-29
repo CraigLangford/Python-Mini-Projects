@@ -1,3 +1,4 @@
+import hashlib
 import os
 import sys
 
@@ -24,8 +25,10 @@ settings.configure(
 
 from django import forms
 from django.conf.urls import url
+from django.core.cache import cache
 from django.core.wsgi import get_wsgi_application
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.views.decorators.http import etag
 from io import BytesIO
 from PIL import Image, ImageDraw
 
@@ -39,20 +42,29 @@ class ImageForm(forms.Form):
         """ Generate an image of the given type and return as raw bytes. """
         height = self.cleaned_data['height']
         width = self.cleaned_data['width']
-        image = Image.new('RGB', (width, height))
-        draw = ImageDraw.Draw(image)
-        text = '{} x {}'.format(width,height)
-        textwidth, textheight = draw.textsize(text)
-        if textwidth < width and textheight < height:
-            texttop = (height - textheight) // 2
-            textleft = (width - textwidth) // 2
-            draw.text((textleft, texttop), text, fill=(255, 255, 255))
-        content = BytesIO()
-        image.save(content, image_format)
-        content.seek(0)
+        key = '{}.{}.{}'.format(width, height, image_format)
+        content = cache.get(key)
+        if content is None:
+            image = Image.new('RGB', (width, height))
+            draw = ImageDraw.Draw(image)
+            text = '{} x {}'.format(width,height)
+            textwidth, textheight = draw.textsize(text)
+            if textwidth < width and textheight < height:
+                texttop = (height - textheight) // 2
+                textleft = (width - textwidth) // 2
+                draw.text((textleft, texttop), text, fill=(255, 255, 255))
+            content = BytesIO()
+            image.save(content, image_format)
+            content.seek(0)
         return content
 
 
+def generate_etag(request, width, height):
+    content = 'Placeholder: {0} x {1}'.format(width, height)
+    return haslib.sha1(content.encode('utf-8')).hexidigest()
+
+
+@etag(generate_etag)
 def placeholder(request, width, height):
     """ For hosting images for the website """
     form = ImageForm({'height': height, 'width': width})
