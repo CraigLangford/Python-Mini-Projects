@@ -27,13 +27,21 @@ from django.core.wsgi import get_wsgi_application
 from django.http import HttpResponse
 
 
+def placeholder(request):
+    """ For hosting images for the website """
+    # TODO: Create the rest of the image placeholder view
+    return HttpResponse("Ok")
+
+
 def index(request):
     """ Home page for hello world """
     return HttpResponse("Hello world!")
 
 
 urlpatterns = (
-    url(r'^$', index),
+    url(r'^image/(?P<width>[0-9]+)x(?P<height>[0-9]+)/$', placeholder,
+        name='placeholder'),
+    url(r'^$', 'index', name='homepage'),
 )
 
 
