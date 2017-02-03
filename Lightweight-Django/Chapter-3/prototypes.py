@@ -19,6 +19,13 @@ settings.configure(
     SITE_PAGES_DIRECTORY=os.path.join(BASE_DIR, 'pages'),
 )
 
+TEMPALTES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'App_DIRS': True,
+    },
+]
+
 
 if __name__ == "__main__":
     from django.core.management import execute_from_command_line
