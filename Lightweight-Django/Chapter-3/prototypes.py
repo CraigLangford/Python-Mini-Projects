@@ -21,7 +21,7 @@ settings.configure(
     STATIC_ROOT=os.path.join(BASE_DIR, '_build', 'static'),
 )
 
-TEMPALTES = [
+TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'App_DIRS': True,
