@@ -3,7 +3,7 @@ import shutil
 
 from django.conf import settings
 from django.core.management import call_command
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
@@ -18,10 +18,23 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """ Request pages and build output. """
-        if os.path.exists(settings.SITE_OUTPUT_DIRECTORY):
-            shutil.rmtree(settings.SITE_OUTPUT_DIRECTORY)
-        os.mkdir(settings.SITE_OUTPUT_DIRECTORY)
-        os.makedirs(settings.STATIC_ROOT)
+        settings.DEBUG = False
+        if args:
+            pages = args
+            available = list(get_pages())
+            invalid = []
+            for page in pages:
+                if page not in available:
+                    invalid.append(page)
+            if invalid:
+                msg = 'Invalid pages: {}'.format(', '.join(invalid))
+                raise(CommandError, msg)
+        else:
+            pages = get_pages()
+            if os.path.exists(settings.SITE_OUTPUT_DIRECTORY):
+                shutil.rmtree(settings.SITE_OUTPUT_DIRECTORY)
+            os.mkdir(settings.SITE_OUTPUT_DIRECTORY)
+            os.makedirs(settings.STATIC_ROOT)
         call_command('collectstatic', interactive=False,
                 clear=True, verbosity=0)
         client = Client()
