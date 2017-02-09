@@ -22,9 +22,6 @@ nnoremap <C-H> <C-W><C-H>
 
 nnoremap tt <C-W><C-V>
 
-" New tab split
-nnoremap <C-N> :vne<CR>
-
 " Tab navigations
 nnoremap th :bp<CR>
 nnoremap tl :bn<CR>
@@ -41,6 +38,7 @@ set foldlevel=50
 nnoremap <space> za
 
 "set the runtime path to include Vundle and initialize
+
 call plug#begin('~/.vim/autoload/plug')
 
 " Install colors for vim
@@ -64,7 +62,7 @@ let g:syntastic_auto_loc_list = 0
 let g:syntastic_check_on_open = 1
 let g:syntastic_warning_symbol = '▶'
 let g:syntastic_error_symbol = '▶'
-exec 'hi SyntasticErrorSign guifg=red ctermfg=red ' . (has("gui_running")? 'guibg=':'ctermbg=') . synIDattr(hlID('SignColumn'),'bg')
+exec 'hi SyntasticErrorSign guifg=red ctermfg=red ' (has("gui_running")? 'guibg=':'ctermbg=') synIDattr(hlID('SignColumn'),'bg')
 
 " Disable most format checking
 let g:syntastic_python_checkers=['pyflakes']
@@ -72,6 +70,7 @@ let g:syntastic_python_flake8_args='--ignore=E,W'
 
 Plug 'tmhedberg/SimpylFold'
 let g:SimpylFold_docstring_preview=1
+set foldmethod=indent
 
 set encoding=utf-8
 
@@ -102,7 +101,7 @@ nmap <silent> <C-D> :NERDTreeToggle<CR>
 
 " For searching current file tree
 Plug 'kien/ctrlp.vim'
-" Ignore pyc files
+"" Ignore pyc files
 set wildignore+=*.pyc
 
 " Check for diffs in current file
@@ -120,9 +119,10 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#syntastic#enabled = 1
+let g:airline#extensions#tabline#show_buffers = 1
 let g:airline_powerline_fonts = 1
-" Allow airline tow work with syntastic2
 
+" Allow airline tow work with syntastic2
 if !exists('g:airline_symbols')
 	    let g:airline_symbols = {}
 endif
@@ -193,7 +193,7 @@ Plug 'dkprice/vim-easygrep'
 let g:EasyGrepCommand=1
 let g:EasyGrepRecursive=1
 let g:EasyGrepDefaultUserPattern="*.py *.html"
-let g:EasyGrepMode='User' 
+let g:EasyGrepMode='User'
 
 call plug#end()
 
@@ -203,7 +203,7 @@ set background=dark
 colorscheme solarized
 
 set modelines=0
-set nomodeline 
+set nomodeline
 
 " Turn of tabs for current project
 filetype plugin indent off
@@ -212,3 +212,7 @@ set autoindent noexpandtab tabstop=4 shiftwidth=4
 " Show tabs
 set list listchars=tab:→\ ,trail:·
 hi! link SpecialKey Normal
+
+" Allow yanking to clipboard
+nnoremap yy yy"+yy
+vnoremap y ygv"+y
