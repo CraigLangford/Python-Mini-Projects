@@ -1,6 +1,12 @@
 " Auto reload .vimrc
 autocmd! bufwritepost .vimrc source %
 
+" Set clipboard to default
+set clipboard=unnamedplus
+
+" Show a line at 99 columns for helping keep length consistent
+set colorcolumn=99
+
 set nocompatible               " required
 filetype on 		       " required
 filetype plugin on
