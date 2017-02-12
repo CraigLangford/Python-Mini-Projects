@@ -9,12 +9,18 @@ class DefaultsMixin(object):
     filtering and pagination """
 
     authentication_classes = (
-            authentication.BasicAuthentication,
-            authentication.TokenAuthentication,
+       authentication.BasicAuthentication,
+       authentication.TokenAuthentication,
     )
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    paginate_by = 25
+    paginate_by_param = 'page_size'
+    max_paginate_by = 100
 
-    permission
-class SprintViewSet(viewsets.ModelViewSet):
+
+class SprintViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """ API endpoint for listing and creating sprints. """
 
     queryset = Sprint.objects.order_by('end')
