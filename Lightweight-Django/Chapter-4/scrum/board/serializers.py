@@ -5,6 +5,6 @@ from .models import Sprint
 
 class SprintSerializer(serializers.ModelSerializer):
 
-	class Meta:
-		model = Sprint
-		fields = ('id', 'name', 'description', 'end',)
+    class Meta:
+        model = Sprint
+        fields = ('id', 'name', 'description', 'end',)
