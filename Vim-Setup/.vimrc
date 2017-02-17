@@ -5,7 +5,7 @@ autocmd! bufwritepost .vimrc source %
 set clipboard=unnamedplus
 
 " Show a line at 99 columns for helping keep length consistent
-set colorcolumn=99
+let &colorcolumn="72,".join(range(99,999),",")
 
 set nocompatible               " required
 filetype on 		       " required
@@ -16,6 +16,9 @@ set relativenumber
 
 " Remap leader key to comma for easy access
 let mapleader = ','
+
+" Search for highlighted word by ctrl-s
+nnoremap <C-W> yiw/<C-R>"<CR>
 
 "split navigations
 set splitbelow
@@ -31,6 +34,8 @@ nnoremap tt <C-W><C-V>
 " Tab navigations
 nnoremap th :bp<CR>
 nnoremap tl :bn<CR>
+
+nnoremap <C-\> :pop<CR>
 
 " Autosave
 noremap <C-Z> :update<CR>
