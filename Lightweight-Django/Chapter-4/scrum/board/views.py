@@ -31,14 +31,14 @@ class SprintViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = SprintSerializer
 
 
-class = TaskViewSet(DefaultsMixin, viewsets.ModelViewSet):
+class TaskViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """ API endpoint for listing and creating tasks. """
 
     queryset = Task.objects.all()
     serializers_class = TaskSerializer
 
 
-class = UserViewSet(DefaultsMixin, viewsets.ReadOnlyModelViewSet):
+class UserViewSet(DefaultsMixin, viewsets.ReadOnlyModelViewSet):
     """ API endpoint for listing users. """
 
     lookup_field = User.USERNAME_FIELD
