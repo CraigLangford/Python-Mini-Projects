@@ -1,9 +1,9 @@
-cd ~/project/webapp
+cd ~/Bitstocks-Platform/bitstocks
 
 set lines=999 columns=999
 set guioptions -=T
 
-set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ Book\ 11.5
+set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 11
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
@@ -38,4 +38,4 @@ let g:airline_symbols.linenr = ''
 
 exec 'hi SyntasticErrorSign guifg=red ctermfg=red' .
             \' guibg=' . synIDattr(synIDtrans(hlID('SignColumn')), 'bg', 'gui') .
-			            \' ctermbg=NONE' . synIDattr(synIDtrans(hlID('SignColumn')), 'bg', 'cterm')
+            \' ctermbg=NONE' . synIDattr(synIDtrans(hlID('SignColumn')), 'bg', 'cterm')
