@@ -11,17 +11,19 @@ User = get_user_model()
 
 class SprintSerializer(serializers.ModelSerializer):
 
-    links = serializers.SerializerMethodField('get_links')
+    links = serializers.SerializerMethodField()
 
     class Meta:
         model = Sprint
-        fields = ('id', 'name', 'description', 'end',)
+        fields = ('id', 'name', 'description', 'end', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
         return {
             'self': reverse('sprint-detail', kwargs={'pk': obj.pk},
                             request=request),
+            'tasks': reverse('task-list',
+                             request=request) + '?sprint={}'.format(obj.pk),
         }
 
 
@@ -30,13 +32,14 @@ class TaskSerializer(serializers.ModelSerializer):
     assigned = serializers.SlugRelatedField(
         slug_field=User.USERNAME_FIELD, required=False, allow_null=True,
         queryset=User.objects.all())
-    status_display = serializers.SerializerMethodField('get_status_display')
-    links = serializers.SerializerMethodField('get_links')
+    status_display = serializers.SerializerMethodField()
+    links = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
-        fields = ('id', 'name', 'description', 'sprint', 'status', 'order',
-                  'assigned', 'started', 'due', 'completed', )
+        fields = ('id', 'name', 'description', 'sprint', 'status',
+                  'status_display', 'order', 'assigned', 'started',
+                  'due', 'completed', 'links',)
 
     def get_status_display(self, obj):
         return obj.get_status_display()
@@ -69,7 +72,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', User.USERNAME_FIELD, 'full_name', 'is_active',)
+        fields = ('id', User.USERNAME_FIELD, 'full_name', 'is_active',
+                  'links',)
 
     def get_links(self, obj):
         request = self.context['request']
@@ -78,4 +82,6 @@ class UserSerializer(serializers.ModelSerializer):
             'self': reverse('user-detail',
                             kwargs={User.USERNAME_FIELD: username},
                             request=request),
+            'tasks': '{}?assigned={}'.format(
+                reverse('task-list', request=request), username)
         }
