@@ -54,8 +54,6 @@ call plug#begin('~/.vim/autoload/plug')
 
 " Install colors for vim
 Plug 'altercation/vim-colors-solarized'
-" Add bold to class and def statements
-hi Statement ctermfg=100 ctermbg=NONE cterm=bold guifg=#859900 guibg=NONE gui=NONE
 
 " Tab closing
 Plug 'moll/vim-bbye'
@@ -214,6 +212,8 @@ call plug#end()
 syntax enable
 set background=dark
 colorscheme solarized
+" Add bold to class and def statements
+hi Statement ctermfg=100 ctermbg=NONE cterm=bold guifg=#859900 guibg=NONE gui=NONE
 
 set modelines=0
 set nomodeline
