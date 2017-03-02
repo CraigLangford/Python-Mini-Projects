@@ -5,7 +5,7 @@ autocmd! bufwritepost .vimrc source %
 set clipboard=unnamedplus
 
 " Show a line at 99 columns for helping keep length consistent
-let &colorcolumn="72,".join(range(99,999),",")
+let &colorcolumn="72,99"
 
 set nocompatible               " required
 filetype on 		       " required
@@ -206,6 +206,13 @@ let g:EasyGrepRecursive=1
 let g:EasyGrepDefaultUserPattern="*.py *.html"
 let g:EasyGrepMode='User'
 
+" Javascript
+Plug 'jelera/vim-javascript-syntax'
+Plug 'pangloss/vim-javascript'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'Raimondi/delimitMate'
+imap <C-c> <CR><Esc>O
+Plug 'marijnh/tern_for_vim'
 call plug#end()
 
 " Change colorscheme
@@ -213,7 +220,7 @@ syntax enable
 set background=dark
 colorscheme solarized
 " Add bold to class and def statements
-hi Statement ctermfg=100 ctermbg=NONE cterm=bold guifg=#859900 guibg=NONE gui=NONE
+hi Statement ctermfg=100 ctermbg=NONE cterm=bold guifg=#859900 guibg=NONE gui=bold
 
 set modelines=0
 set nomodeline
