@@ -78,6 +78,7 @@ exec 'hi SyntasticErrorSign guifg=red ctermfg=red ' (has("gui_running")? 'guibg=
 " Disable most format checking
 let g:syntastic_python_checkers=['pyflakes']
 let g:syntastic_python_flake8_args='--ignore=E,W'
+let g:syntastic_htmldjango_checkers=['jshint']
 
 Plug 'tmhedberg/SimpylFold'
 let g:SimpylFold_docstring_preview=1
@@ -205,6 +206,7 @@ let g:EasyGrepCommand=1
 let g:EasyGrepRecursive=1
 let g:EasyGrepDefaultUserPattern="*.py *.html"
 let g:EasyGrepMode='User'
+let g:EasyGrepFilesToExclude="docs,.git"
 
 " Javascript
 Plug 'jelera/vim-javascript-syntax'
@@ -230,8 +232,9 @@ filetype plugin indent off
 set autoindent noexpandtab tabstop=4 shiftwidth=4
 
 " Show tabs
-set list listchars=tab:→\ ,trail:·
-hi! link SpecialKey Normal
+" set list listchars=tab:→\ ,trail:·
+set list listchars=tab:\|\ ,trail:·
+hi! link SpecialKey Comment
 
 " Allow yanking to clipboard
 nnoremap yy yy"+yy
