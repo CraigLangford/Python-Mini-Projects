@@ -39,7 +39,7 @@
                     login.render();
                 }
             });
-            return Backbone.Router.prototype.route.aply(this, [route, name, callback]);
+            return Backbone.Router.prototype.route.apply(this, [route, name, callback]);
         },
         render: function (view) {
             if (this.current) {
