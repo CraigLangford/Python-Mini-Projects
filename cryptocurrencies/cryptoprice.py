@@ -12,8 +12,8 @@ API_LINK = ("https://min-api.cryptocompare.com"
 def collect_price_for_crypto_currency(
         crypto_currency="Bitcoin", currency="GBP"):
     """
-    Takes a crypto currency and hits the API searching for the
-    conversion rate.
+    Takes a crypto currency, finds the nearest match, and hits the API
+    searching for the conversion rate.
     """
     REVERSE_SUPPORTED_COINS = {SUPPORTED_COINS[k]: k for k in SUPPORTED_COINS}
     if crypto_currency.lower() in SUPPORTED_COINS:
