@@ -1,8 +1,9 @@
 from cryptoprice import (
-    get_crypto_price, collect_price_for_crypto_currency
+    crypto_price_lambda, collect_crypto_price
 )
 
-EXAMPLE_REQUEST = {"session": {
+EXAMPLE_INTENT_REQUEST = {
+    "session": {
         "sessionId": "SessionId.6beee92e-e49fakjdsh73-b514-3c03b7eec660",
         "application": {
             "applicationId": "amzn1.ask.skill.fasjdofsad998fasdj"
@@ -31,46 +32,53 @@ EXAMPLE_REQUEST = {"session": {
 }
 
 
-def test_cryptocurrency_returns_dictionary():
-    assert type(get_crypto_price(EXAMPLE_REQUEST, {})) == dict
+def test_collect_crypto_price_for_various_cryptocurrencies():
+    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    assert title == "Bitcoin Price"
+    assert response_message.startswith("Bitcoin is currently worth")
+
+    EXAMPLE_INTENT_REQUEST['request'][
+        'intent']['slots']['Cryptocurrency']['value'] = "ethereum"
+    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    assert title == "Ethereum Price"
+    assert response_message.startswith("Ethereum is currently worth")
+
+    EXAMPLE_INTENT_REQUEST['request'][
+        'intent']['slots']['Cryptocurrency']['value'] = "doge coin"
+    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    assert title == "Dogecoin Price"
+    assert response_message.startswith("Dogecoin is currently worth")
+
+    EXAMPLE_INTENT_REQUEST['request'][
+        'intent']['slots']['Cryptocurrency']['value'] = "XMR"
+    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    assert title == "Monero Price"
+    assert response_message.startswith("Monero is currently worth")
 
 
-def test_get_crypto_price_takes_crypto_currency():
-    assert type(get_crypto_price(EXAMPLE_REQUEST, {})) == dict
+def test_collect_crypto_price_for_nearest_values():
+    EXAMPLE_INTENT_REQUEST['request'][
+        'intent']['slots']['Cryptocurrency']['value'] = "dog coin"
+    title, response_message = collect_crypto_price(
+        EXAMPLE_INTENT_REQUEST, {})
+    assert title == "Dogecoin Price"
+    assert response_message.startswith("Dogecoin is currently worth")
+
+    EXAMPLE_INTENT_REQUEST['request'][
+        'intent']['slots']['Cryptocurrency']['value'] = "XM are"
+    title, response_message = collect_crypto_price(
+        EXAMPLE_INTENT_REQUEST, {})
+    assert title == "Monero Price"
+    assert response_message.startswith("Monero is currently worth")
+
+
+def test_crypto_price_lambda_returns_dictionary():
+    assert type(crypto_price_lambda(EXAMPLE_INTENT_REQUEST, {})) == dict
 
 
 def test_cryptocurrency_returns_correct_format():
-    conversion_response = get_crypto_price(EXAMPLE_REQUEST, {})
+    conversion_response = crypto_price_lambda(EXAMPLE_INTENT_REQUEST, {})
     assert 'version' in conversion_response
     assert 'response' in conversion_response
     assert 'card' in conversion_response['response']
     assert 'outputSpeech' in conversion_response['response']
-
-
-def test_collect_price_for_various_crypto_currencies():
-    crypto_type, crypto_price = collect_price_for_crypto_currency()
-    assert crypto_type == "Bitcoin"
-    assert type(crypto_price) in [float, int]
-    crypto_type, crypto_price = collect_price_for_crypto_currency(
-        crypto_currency="Ethereum")
-    assert crypto_type == "Ethereum"
-    assert type(crypto_price) in [float, int]
-    crypto_type, crypto_price = collect_price_for_crypto_currency(
-        crypto_currency="DOGE")
-    assert crypto_type == "Dogecoin"
-    assert type(crypto_price) in [float, int]
-    crypto_type, crypto_price = collect_price_for_crypto_currency(
-        crypto_currency="monero")
-    assert crypto_type == "Monero"
-    assert type(crypto_price) in [float, int]
-
-
-def test_collect_price_for_nearest_values():
-    crypto_type, crypto_price = collect_price_for_crypto_currency(
-        crypto_currency="doge coin")
-    assert crypto_type == "Dogecoin"
-    assert type(crypto_price) in [float, int]
-    crypto_type, crypto_price = collect_price_for_crypto_currency(
-        crypto_currency="lite coin")
-    assert crypto_type == "Litecoin"
-    assert type(crypto_price) in [float, int]
