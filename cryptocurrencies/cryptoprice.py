@@ -6,7 +6,7 @@ with open('currencies.json') as currency_file:
     SUPPORTED_COINS = json.load(currency_file)
 
 API_LINK = ("https://min-api.cryptocompare.com"
-            "/data/price?fsym={fsym}&tsyms={tsyms}")
+            "/data/price?fsym={from_symbol}&tsyms={tsyms}")
 
 
 def collect_price_for_crypto_currency(
@@ -17,10 +17,10 @@ def collect_price_for_crypto_currency(
     """
     REVERSE_SUPPORTED_COINS = {SUPPORTED_COINS[k]: k for k in SUPPORTED_COINS}
     if crypto_currency.lower() in SUPPORTED_COINS:
-        fsym = SUPPORTED_COINS[crypto_currency.lower()]
+        from_symbol = SUPPORTED_COINS[crypto_currency.lower()]
         crypto_currency = crypto_currency.title()
     elif crypto_currency.upper() in REVERSE_SUPPORTED_COINS:
-        fsym = crypto_currency.upper()
+        from_symbol = crypto_currency.upper()
         crypto_currency = REVERSE_SUPPORTED_COINS[
             crypto_currency.upper()].title()
     else:
@@ -29,12 +29,12 @@ def collect_price_for_crypto_currency(
         closest_guesses = get_close_matches(crypto_currency.lower(), all_names)
         closest_guess = closest_guesses[0]
         if closest_guess.lower() in SUPPORTED_COINS.keys():
-            fsym = SUPPORTED_COINS[closest_guess.lower()]
+            from_symbol = SUPPORTED_COINS[closest_guess.lower()]
             crypto_currency = closest_guess.title()
         else:
-            fsym = closest_guess.upper()
+            from_symbol = closest_guess.upper()
             crypto_currency = REVERSE_SUPPORTED_COINS[closest_guess.upper()]
-    api_link = API_LINK.format(fsym=fsym, tsyms='GBP')
+    api_link = API_LINK.format(from_symbol=from_symbol, tsyms='GBP')
     api_response = requests.get(api_link)
     api_prices = json.loads(api_response.content)
     return crypto_currency, api_prices['GBP']
