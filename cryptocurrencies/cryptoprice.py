@@ -15,9 +15,9 @@ def collect_crypto_price(event, session):
     the user is asking from.
     """
 
-    data = event['request']['intent']['slots']
-    crypto_currency = data['Cryptocurrency']['value']
-    currency = data['Currency'].get('value')
+    slots = event['request']['intent']['slots']
+    crypto_currency = slots['cryptocurrency']['value']
+    currency = slots['Currency'].get('value')
 
     with open('currencies.json') as currency_file:
         SUPPORTED_COINS = json.load(currency_file)
