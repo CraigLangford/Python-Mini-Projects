@@ -1,4 +1,5 @@
 import json
+import logging
 import requests
 from difflib import get_close_matches
 
@@ -6,7 +7,7 @@ API_LINK = ("https://min-api.cryptocompare.com"
             "/data/price?fsym={from_symbol}&tsyms={to_symbols}")
 
 
-def collect_crypto_price(request, session):
+def collect_crypto_price(event, session):
     """
     Extracts the cryptocurrency, finds the nearest match, and returns
     its price. If the financial currency is supplied the amount returned
@@ -14,7 +15,7 @@ def collect_crypto_price(request, session):
     the user is asking from.
     """
 
-    data = request['request']['intent']['slots']
+    data = event['request']['intent']['slots']
     crypto_currency = data['Cryptocurrency']['value']
     currency = data['Currency'].get('value')
 
@@ -62,16 +63,20 @@ def collect_crypto_price(request, session):
     return title, response_message
 
 
-def crypto_price_lambda(request, session):
+def crypto_price_lambda(event, session):
     """
     Takes in a cryptocurrency as well as an optional currency and outputs
     the exchange rate.
     """
-    if request.get('type') == 'LaunchRequest':
-        title = "Welcome to Crypto Price"
-        response_message = "Hello from crypto price"
+    logging.warn(str(event))
+    logging.warn(str(session))
+
+    if event['request'].get('type') == 'LaunchRequest':
+        title = "Crypto Price Trends"
+        response_message = ("The current trending crypto currencies are x, y "
+                            "and z")
     else:
-        title, response_message = collect_crypto_price(request, session)
+        title, response_message = collect_crypto_price(event, session)
 
     response = {"version": "1.0"}
     response['response'] = {
