@@ -78,7 +78,7 @@ def crypto_price_lambda(event, session):
         response = build_response(card_title=title,
                                   card_content=response_message,
                                   output_speech=response_message,
-                                  should_end_sesion=False)
+                                  should_end_session=False)
     else:
         title, response_message = collect_crypto_price(event, session)
         response = build_response(card_title=title,
@@ -90,9 +90,9 @@ def crypto_price_lambda(event, session):
 
 def build_response(
         card_title="Crypto Price",
-        card_content="Returns price of a cryptocurrency"
+        card_content="Returns price of a cryptocurrency",
         output_speech="Welcome to cryptoprice",
-        should_end_sesion=True):
+        should_end_session=True):
     """
     Builds a valid ASK response based on the incoming attributes.
     """
@@ -107,7 +107,7 @@ def build_response(
             "outputSpeech": {
                 "type": "PlainText",
                 "text": output_speech
-            }
-        },
-        "shouldEndSession": should_end_session
+            },
+            "shouldEndSession": should_end_session
+        }
     }
