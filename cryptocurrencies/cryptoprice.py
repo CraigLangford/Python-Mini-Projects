@@ -71,21 +71,44 @@ def crypto_price_lambda(event, session):
     logging.warn(str(event))
     logging.warn(str(session))
 
-    if event['request'].get('type') == 'LaunchRequest':
+    request_type = event['request'].get('type')
+
+    if request_type == 'LaunchRequest':
         title = "Crypto Price Trends"
-        response_message = ("Welcome to crypto price. You can ask a question "
-                            "like: What is the price of cryptocurrency?")
-        response = build_response(card_title=title,
+        response_message = ("Welcome to crypto price. Please ask a question "
+                            "like: What is the price of bitcoin")
+        return build_response(card_title=title,
+                              card_content=response_message,
+                              output_speech=response_message,
+                              should_end_session=False)
+    elif request_type == 'IntentRequest':
+        request_intent = event['request']['intent']['name']
+        if request_intent == 'GetCryptoPriceIntent':
+            title, response_message = collect_crypto_price(event, session)
+            return build_response(card_title=title,
+                                  card_content=response_message,
+                                  output_speech=response_message)
+        elif request_intent == 'AMAZON.HelpIntent':
+            title = "Crypto Price Help"
+            response_message = ("Crypto price returns the price of the "
+                                "leading cryptocurrencies. You can ask "
+                                "questions like: What is the price of "
+                                "bitcoin, tell me the current price of monero "
+                                "in US dollars, and, what is the price of "
+                                "litecoin in pounds. Please ask a question.")
+            return build_response(card_title=title,
                                   card_content=response_message,
                                   output_speech=response_message,
                                   should_end_session=False)
-    else:
-        title, response_message = collect_crypto_price(event, session)
-        response = build_response(card_title=title,
+        elif request_intent in ['AMAZON.StopIntent', 'AMAZON.CancelIntent']:
+            title = "Crypto Price Cancel"
+            response_message = ("Thanks for using crypto price. See you at "
+                                "the moon.")
+            return build_response(card_title=title,
                                   card_content=response_message,
-                                  output_speech=response_message)
+                                  output_speech=response_message,
+                                  should_end_session=True)
 
-    return response
 
 
 def build_response(

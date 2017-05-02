@@ -21,8 +21,8 @@ EXAMPLE_INTENT_REQUEST = {
             "name": "GetCryptoPriceIntent",
             "slots": {
                 "Currency": {"name": "Currency"},
-                "Cryptocurrency": {
-                    "name": "Cryptocurrency",
+                "cryptocurrency": {
+                    "name": "cryptocurrency",
                     "value": "Bitcoin"
                 }
             }
@@ -38,19 +38,19 @@ def test_collect_crypto_price_for_various_cryptocurrencies():
     assert response_message.startswith("Bitcoin is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
-        'intent']['slots']['Cryptocurrency']['value'] = "ethereum"
+        'intent']['slots']['cryptocurrency']['value'] = "ethereum"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
     assert title == "Ethereum Price"
     assert response_message.startswith("Ethereum is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
-        'intent']['slots']['Cryptocurrency']['value'] = "doge coin"
+        'intent']['slots']['cryptocurrency']['value'] = "doge coin"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
     assert title == "Dogecoin Price"
     assert response_message.startswith("Dogecoin is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
-        'intent']['slots']['Cryptocurrency']['value'] = "XMR"
+        'intent']['slots']['cryptocurrency']['value'] = "XMR"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
     assert title == "Monero Price"
     assert response_message.startswith("Monero is currently worth")
@@ -58,14 +58,14 @@ def test_collect_crypto_price_for_various_cryptocurrencies():
 
 def test_collect_crypto_price_for_nearest_values():
     EXAMPLE_INTENT_REQUEST['request'][
-        'intent']['slots']['Cryptocurrency']['value'] = "dog coin"
+        'intent']['slots']['cryptocurrency']['value'] = "dog coin"
     title, response_message = collect_crypto_price(
         EXAMPLE_INTENT_REQUEST, {})
     assert title == "Dogecoin Price"
     assert response_message.startswith("Dogecoin is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
-        'intent']['slots']['Cryptocurrency']['value'] = "XM are"
+        'intent']['slots']['cryptocurrency']['value'] = "XM are"
     title, response_message = collect_crypto_price(
         EXAMPLE_INTENT_REQUEST, {})
     assert title == "Monero Price"
