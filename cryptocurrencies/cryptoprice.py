@@ -73,21 +73,41 @@ def crypto_price_lambda(event, session):
 
     if event['request'].get('type') == 'LaunchRequest':
         title = "Crypto Price Trends"
-        response_message = ("The current trending crypto currencies are x, y "
-                            "and z")
+        response_message = ("Welcome to crypto price. You can ask a question "
+                            "like: What is the price of cryptocurrency?")
+        response = build_response(card_title=title,
+                                  card_content=response_message,
+                                  output_speech=response_message,
+                                  should_end_sesion=False)
     else:
         title, response_message = collect_crypto_price(event, session)
+        response = build_response(card_title=title,
+                                  card_content=response_message,
+                                  output_speech=response_message)
 
-    response = {"version": "1.0"}
-    response['response'] = {
-        "card": {
-            "type": "Simple",
-            "title": title,
-            "content": response_message
-        },
-        "outputSpeech": {
-            "type": "PlainText",
-            "text": response_message
-        }
-    }
     return response
+
+
+def build_response(
+        card_title="Crypto Price",
+        card_content="Returns price of a cryptocurrency"
+        output_speech="Welcome to cryptoprice",
+        should_end_sesion=True):
+    """
+    Builds a valid ASK response based on the incoming attributes.
+    """
+    return {
+        "version": "1.0",
+        "response": {
+            "card": {
+                "type": "Simple",
+                "title": card_title,
+                "content": card_content,
+            },
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": output_speech
+            }
+        },
+        "shouldEndSession": should_end_session
+    }
