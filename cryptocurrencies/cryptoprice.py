@@ -63,7 +63,7 @@ def collect_crypto_price(event, session):
 
     api_link = API_LINK.format(from_symbol=from_symbol, to_symbols=to_symbol)
     api_response = requests.get(api_link)
-    api_price = json.loads(api_response.content)[to_symbol]
+    api_price = json.loads(api_response.content).get(to_symbol, 'USD')
 
     title = "{from_currency} Price in {to_currency}".format(
                 from_currency=from_currency,
