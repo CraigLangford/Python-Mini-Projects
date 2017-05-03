@@ -6,6 +6,34 @@ from difflib import get_close_matches
 API_LINK = ("https://min-api.cryptocompare.com"
             "/data/price?fsym={from_symbol}&tsyms={to_symbols}")
 
+def get_key_and_value_match(key_word, dictionary):
+    """
+    Takes a key word and finds the key or value inside the dictionary which
+    matches it and returns the corresponding key and value pair. If there is
+    no direct match, the nearest key or value is then found.
+    Dictionary is expected to be with lower case keys and upper case values.
+    """
+    reverse_dictionary = {dictionary[k]: k for k in dictionary}
+    if key_word.lower() in dictionary:
+        key = key_word.title()
+        value = dictionary[key_word.lower()]
+    elif key_word.upper() in reverse_dictionary:
+        key = reverse_dictionary[key_word.upper()].title()
+        value = key_word.upper()
+    else:
+        all_names = ([k.lower() for k in dictionary.keys()]
+                     + [v.lower() for v in dictionary.values()])
+        closest_guesses = get_close_matches(key_word.lower(), all_names)
+        closest_guess = closest_guesses[0]
+        if closest_guess.lower() in dictionary.keys():
+            key = closest_guess
+            value = dictionary[closest_guess.lower()]
+        else:
+            key = reverse_dictionary[closest_guess.upper()]
+            value = closest_guess.upper()
+
+    return key.title(), value.upper()
+
 
 def collect_crypto_price(event, session):
     """
@@ -19,46 +47,35 @@ def collect_crypto_price(event, session):
     crypto_currency = slots['cryptocurrency']['value']
     currency = slots['Currency'].get('value')
 
-    with open('currencies.json') as currency_file:
-        SUPPORTED_COINS = json.load(currency_file)
-    REVERSE_SUPPORTED_COINS = {SUPPORTED_COINS[k]: k for k in SUPPORTED_COINS}
+    with open('cryptocurrencies.json') as cryptocurrency_file:
+        SUPPORTED_COINS = json.load(cryptocurrency_file)
+    from_currency, from_symbol = get_key_and_value_match(crypto_currency,
+                                                         SUPPORTED_COINS)
 
-    if crypto_currency.lower() in SUPPORTED_COINS:
-        from_symbol = SUPPORTED_COINS[crypto_currency.lower()]
-        crypto_currency = crypto_currency.title()
-    elif crypto_currency.upper() in REVERSE_SUPPORTED_COINS:
-        from_symbol = crypto_currency.upper()
-        crypto_currency = REVERSE_SUPPORTED_COINS[
-            crypto_currency.upper()].title()
-    else:
-        all_names = ([w.lower() for w in SUPPORTED_COINS.keys()]
-                     + [w.lower() for w in SUPPORTED_COINS.values()])
-        closest_guesses = get_close_matches(crypto_currency.lower(), all_names)
-        closest_guess = closest_guesses[0]
-
-        if closest_guess.lower() in SUPPORTED_COINS.keys():
-            from_symbol = SUPPORTED_COINS[closest_guess.lower()]
-            crypto_currency = closest_guess.title()
-        else:
-            from_symbol = closest_guess.upper()
-            crypto_currency = REVERSE_SUPPORTED_COINS[closest_guess.upper()]
-            crypto_currency = crypto_currency.title()
-
-    currency_symbol = 'GBP'
-
-    api_link = API_LINK.format(from_symbol=from_symbol,
-                               to_symbols=currency_symbol)
-    api_response = requests.get(api_link)
-    api_price = json.loads(api_response.content)[currency_symbol]
-
-    title = "{crypto_currency} Price".format(crypto_currency=crypto_currency)
-
-    response_message = ("{crypto_currency} is currently worth {value}"
-                        " {currency}.")
-    response_message = response_message.format(
-        crypto_currency=crypto_currency, value=api_price, currency="pounds")
     if currency:
-        response_message += " Different currencies aren't yet supported."
+        with open('currencies.json') as currency_file:
+            SUPPORTED_CURRENCIES = json.load(currency_file)
+        to_currency, to_symbol = get_key_and_value_match(currency,
+                                                         SUPPORTED_CURRENCIES)
+    else:
+        to_currency = "US Dollars"
+        to_symbol = "USD"
+
+    api_link = API_LINK.format(from_symbol=from_symbol, to_symbols=to_symbol)
+    api_response = requests.get(api_link)
+    api_price = json.loads(api_response.content)[to_symbol]
+
+    title = "{from_currency} Price in {to_currency}".format(
+                from_currency=from_currency,
+                to_currency=to_currency
+            )
+    response_message = ("{from_currency} is currently worth {value}"
+                        " {to_currency}")
+    response_message = response_message.format(
+                           from_currency=from_currency,
+                           value=api_price,
+                           to_currency=to_currency
+                       )
 
     return title, response_message
 

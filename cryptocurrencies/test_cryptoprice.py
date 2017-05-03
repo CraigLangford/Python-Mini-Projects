@@ -34,25 +34,25 @@ EXAMPLE_INTENT_REQUEST = {
 
 def test_collect_crypto_price_for_various_cryptocurrencies():
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Bitcoin Price"
+    assert title == "Bitcoin Price in US Dollars"
     assert response_message.startswith("Bitcoin is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "ethereum"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Ethereum Price"
+    assert title == "Ethereum Price in US Dollars"
     assert response_message.startswith("Ethereum is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "doge coin"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Dogecoin Price"
+    assert title == "Dogecoin Price in US Dollars"
     assert response_message.startswith("Dogecoin is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "XMR"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Monero Price"
+    assert title == "Monero Price in US Dollars"
     assert response_message.startswith("Monero is currently worth")
 
 
@@ -61,14 +61,14 @@ def test_collect_crypto_price_for_nearest_values():
         'intent']['slots']['cryptocurrency']['value'] = "dog coin"
     title, response_message = collect_crypto_price(
         EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Dogecoin Price"
+    assert title == "Dogecoin Price in US Dollars"
     assert response_message.startswith("Dogecoin is currently worth")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "XM are"
     title, response_message = collect_crypto_price(
         EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Monero Price"
+    assert title == "Monero Price in US Dollars"
     assert response_message.startswith("Monero is currently worth")
 
 
