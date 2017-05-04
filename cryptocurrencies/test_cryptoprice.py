@@ -28,6 +28,27 @@ EXAMPLE_INTENT_REQUEST = {
             }
         }
     },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "string"
+            },
+            "user": {
+                "userId": "string",
+                "permissions": {
+                    "consentToken": "string"
+                },
+                "accessToken": "string"
+            },
+            "device": {
+                "deviceId": "string",
+                "supportedInterfaces": {
+                    "AudioPlayer": {}
+                }
+            },
+            "apiEndpoint": "string"
+        }
+    },
     "version": "1.0"
 }
 
@@ -50,28 +71,32 @@ def test_get_key_and_value_match():
 
 
 def test_collect_crypto_price_for_various_cryptocurrencies():
-    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    crypto_details = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    title, response_message, location_enabled = crypto_details
     assert title == "Bitcoin Price in US Dollars"
     assert response_message.startswith("Bitcoin is currently worth")
     assert response_message.endswith("US Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "ethereum"
-    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    crypto_details = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    title, response_message, location_enabled = crypto_details
     assert title == "Ethereum Price in US Dollars"
     assert response_message.startswith("Ethereum is currently worth")
     assert response_message.endswith("US Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "doge coin"
-    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    crypto_details = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    title, response_message, location_enabled = crypto_details
     assert title == "Dogecoin Price in US Dollars"
     assert response_message.startswith("Dogecoin is currently worth")
     assert response_message.endswith("US Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "XMR"
-    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    crypto_details = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    title, response_message, location_enabled = crypto_details
     assert title == "Monero Price in US Dollars"
     assert response_message.startswith("Monero is currently worth")
     assert response_message.endswith("US Dollars")
@@ -82,15 +107,16 @@ def test_collect_crypto_price_for_nearest_values():
         'intent']['slots']['cryptocurrency']['value'] = "dog coin"
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['Currency']['value'] = "camadian dollars"
-    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    crypto_details = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    title, response_message, location_enabled = crypto_details
     assert title == "Dogecoin Price in Canadian Dollars"
     assert response_message.startswith("Dogecoin is currently worth")
     assert response_message.endswith("Canadian Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "XM R"
-    title, response_message = collect_crypto_price(
-        EXAMPLE_INTENT_REQUEST, {})
+    crypto_details = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    title, response_message, location_enabled = crypto_details
     assert title == "Monero Price in Canadian Dollars"
     assert response_message.startswith("Monero is currently worth")
     assert response_message.endswith("Canadian Dollars")

@@ -5,8 +5,11 @@ from difflib import get_close_matches
 
 API_LINK = ("https://min-api.cryptocompare.com"
             "/data/price?fsym={from_symbol}&tsyms={to_symbols}")
+USER_LOCATION_LINK = ("https://api.amazonalexa.com/v1/devices/{device_id}"
+                      "/settings/address/countryAndPostalCode")
 DEFAULT_CRYPTO = 'Bitcoin'
 DEFAULT_CURRENCY = 'US Dollars'
+
 
 
 def get_key_and_value_match(key_word, dictionary, default_key_word):
@@ -49,11 +52,21 @@ def collect_crypto_price(event, session):
     is in that currency. Otherwise the price is returned based on where
     the user is asking from.
     """
-
+    location_permission = True
     slots = event['request']['intent']['slots']
-    crypto_currency = slots['cryptocurrency']['value']
     crypto_currency = slots['cryptocurrency'].get('value', DEFAULT_CRYPTO)
-    currency = slots['Currency'].get('value', DEFAULT_CURRENCY)
+    currency = slots['Currency'].get('value', None)
+    if not currency:
+        currency = "US Dollars"
+        device_id = event['context']['System']['device']['deviceId']
+        permissions = event['context']['System']['user']['permissions']
+        if permissions == {}:
+            location_permission = False
+        else:
+            consent_token = permissions['consentToken']
+            location_api_link = USER_LOCATION_LINK.format(device_id=device_id)
+            response = requests.get(location_api_link)
+            logging.warn(str(response))
 
     with open('cryptocurrencies.json') as cryptocurrency_file:
         SUPPORTED_COINS = json.load(cryptocurrency_file)
@@ -87,7 +100,7 @@ def collect_crypto_price(event, session):
                            to_currency=to_currency
                        )
 
-    return title, response_message
+    return title, response_message, location_permission
 
 
 def crypto_price_lambda(event, session):
@@ -96,7 +109,6 @@ def crypto_price_lambda(event, session):
     the exchange rate.
     """
     logging.warn(str(event))
-    logging.warn(str(session))
 
     request_type = event['request'].get('type')
 
@@ -111,10 +123,14 @@ def crypto_price_lambda(event, session):
     elif request_type == 'IntentRequest':
         request_intent = event['request']['intent']['name']
         if request_intent == 'GetCryptoPriceIntent':
-            title, response_message = collect_crypto_price(event, session)
-            return build_response(card_title=title,
-                                  card_content=response_message,
-                                  output_speech=response_message)
+            crypto_details = collect_crypto_price(event, session)
+            title, response_message, location_permission = crypto_details
+            response = build_response(card_title=title,
+                                      card_content=response_message,
+                                      output_speech=response_message)
+            if not location_permission:
+                response = add_permission_request(response)
+            return response
         elif request_intent == 'AMAZON.HelpIntent':
             title = "Crypto Price Help"
             response_message = ("Crypto price returns the price of the "
@@ -135,7 +151,6 @@ def crypto_price_lambda(event, session):
                                   card_content=response_message,
                                   output_speech=response_message,
                                   should_end_session=True)
-
 
 
 def build_response(
@@ -161,3 +176,23 @@ def build_response(
             "shouldEndSession": should_end_session
         }
     }
+
+
+def add_permission_request(response):
+    """
+    Changes the response card to ask for location permissions and adds to the
+    output speech to alert user to enable location settings for app.
+    """
+    permission_card = {
+        "type": "AskForPermissionsConsent",
+        "permissions": [
+            "read::alexa:device:all:address:country_and_postal_code"
+        ]
+    }
+    permission_message = (". To get your country's currency automatically, "
+                          "please enable location permissions for crypto "
+                          "price in your alexa app")
+    response['response']['card'] = permission_card
+    response['response']['outputSpeech']['text'] = permission_message
+
+    return response
