@@ -63,18 +63,22 @@ def collect_crypto_price(event, session):
         if permissions == {}:
             location_permission = False
         else:
-            consent_token = permissions['consentToken']
+            consent_token = "Bearer " + permissions['consentToken']
+            headers = {'Authorization': consent_token}
             location_api_link = USER_LOCATION_LINK.format(device_id=device_id)
-            response = requests.get(location_api_link)
-            logging.warn(str(response))
+            response = requests.get(location_api_link, headers=headers)
+            country_code = response.json()['countryCode']
+            with open('country_to_currency.json', 'r') as c2c_file:
+                COUNTRIES_TO_CURRENCIES = json.load(c2c_file)
+            currency = COUNTRIES_TO_CURRENCIES[country_code]
 
-    with open('cryptocurrencies.json') as cryptocurrency_file:
+    with open('cryptocurrencies.json', 'r') as cryptocurrency_file:
         SUPPORTED_COINS = json.load(cryptocurrency_file)
     from_currency, from_symbol = get_key_and_value_match(crypto_currency,
                                                          SUPPORTED_COINS,
                                                          DEFAULT_CRYPTO)
 
-    with open('currencies.json') as currency_file:
+    with open('currencies.json', 'r') as currency_file:
         SUPPORTED_CURRENCIES = json.load(currency_file)
     if currency:
         to_currency, to_symbol = get_key_and_value_match(currency,
