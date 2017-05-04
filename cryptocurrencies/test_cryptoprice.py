@@ -1,5 +1,5 @@
 from cryptoprice import (
-    crypto_price_lambda, collect_crypto_price
+    crypto_price_lambda, collect_crypto_price, get_key_and_value_match
 )
 
 EXAMPLE_INTENT_REQUEST = {
@@ -32,48 +32,75 @@ EXAMPLE_INTENT_REQUEST = {
 }
 
 
+def test_get_key_and_value_match():
+    """
+    Tests the get_key_and_value_match with various keys and values.
+    """
+    test_dict = {"Apple": "APC", "Banana": "BNC", "Carrot and Potato": "CAP"}
+    args = ("carrot and potato", test_dict, "default")
+    assert "Apple", "APC" == get_key_and_value_match(*args)
+    args = ("carrot and potato", test_dict, "default")
+    assert "Banana", "BNC" == get_key_and_value_match(*args)
+    args = ("carrot and potato", test_dict, "default")
+    assert "Carrot and Potato", "CAP" == get_key_and_value_match(*args)
+    args = ("appl", test_dict, "default")
+    assert "Apple", "APC" == get_key_and_value_match(*args)
+    args = ("fdsaoijpjo", test_dict, "Apple")
+    assert "Apple", "APC" == get_key_and_value_match(*args)
+
+
 def test_collect_crypto_price_for_various_cryptocurrencies():
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
     assert title == "Bitcoin Price in US Dollars"
     assert response_message.startswith("Bitcoin is currently worth")
+    assert response_message.endswith("US Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "ethereum"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
     assert title == "Ethereum Price in US Dollars"
     assert response_message.startswith("Ethereum is currently worth")
+    assert response_message.endswith("US Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "doge coin"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
     assert title == "Dogecoin Price in US Dollars"
     assert response_message.startswith("Dogecoin is currently worth")
+    assert response_message.endswith("US Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "XMR"
     title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
     assert title == "Monero Price in US Dollars"
     assert response_message.startswith("Monero is currently worth")
+    assert response_message.endswith("US Dollars")
 
 
 def test_collect_crypto_price_for_nearest_values():
     EXAMPLE_INTENT_REQUEST['request'][
         'intent']['slots']['cryptocurrency']['value'] = "dog coin"
-    title, response_message = collect_crypto_price(
-        EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Dogecoin Price in US Dollars"
+    EXAMPLE_INTENT_REQUEST['request'][
+        'intent']['slots']['Currency']['value'] = "camadian dollars"
+    title, response_message = collect_crypto_price(EXAMPLE_INTENT_REQUEST, {})
+    assert title == "Dogecoin Price in Canadian Dollars"
     assert response_message.startswith("Dogecoin is currently worth")
+    assert response_message.endswith("Canadian Dollars")
 
     EXAMPLE_INTENT_REQUEST['request'][
-        'intent']['slots']['cryptocurrency']['value'] = "XM are"
+        'intent']['slots']['cryptocurrency']['value'] = "XM R"
     title, response_message = collect_crypto_price(
         EXAMPLE_INTENT_REQUEST, {})
-    assert title == "Monero Price in US Dollars"
+    assert title == "Monero Price in Canadian Dollars"
     assert response_message.startswith("Monero is currently worth")
+    assert response_message.endswith("Canadian Dollars")
 
 
 def test_crypto_price_lambda_returns_dictionary():
-    assert type(crypto_price_lambda(EXAMPLE_INTENT_REQUEST, {})) == dict
+    crypto_price_response = crypto_price_lambda(EXAMPLE_INTENT_REQUEST, {})
+    assert type(crypto_price_response) == dict
+    assert 'version' in crypto_price_response
+    assert 'response' in crypto_price_response
 
 
 def test_cryptocurrency_returns_correct_format():

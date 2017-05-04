@@ -5,8 +5,11 @@ from difflib import get_close_matches
 
 API_LINK = ("https://min-api.cryptocompare.com"
             "/data/price?fsym={from_symbol}&tsyms={to_symbols}")
+DEFAULT_CRYPTO = 'Bitcoin'
+DEFAULT_CURRENCY = 'US Dollars'
 
-def get_key_and_value_match(key_word, dictionary):
+
+def get_key_and_value_match(key_word, dictionary, default_key_word):
     """
     Takes a key word and finds the key or value inside the dictionary which
     matches it and returns the corresponding key and value pair. If there is
@@ -14,25 +17,29 @@ def get_key_and_value_match(key_word, dictionary):
     Dictionary is expected to be with lower case keys and upper case values.
     """
     reverse_dictionary = {dictionary[k]: k for k in dictionary}
-    if key_word.lower() in dictionary:
-        key = key_word.title()
-        value = dictionary[key_word.lower()]
-    elif key_word.upper() in reverse_dictionary:
-        key = reverse_dictionary[key_word.upper()].title()
-        value = key_word.upper()
+    if key_word in dictionary:
+        key = key_word
+        value = dictionary[key_word]
+    elif key_word in reverse_dictionary:
+        key = reverse_dictionary[key_word]
+        value = key_word
     else:
-        all_names = ([k.lower() for k in dictionary.keys()]
-                     + [v.lower() for v in dictionary.values()])
+        all_names = {k.lower(): k for k in dictionary.keys()}
+        all_names.update({v.lower(): v for v in dictionary.values()})
         closest_guesses = get_close_matches(key_word.lower(), all_names)
-        closest_guess = closest_guesses[0]
-        if closest_guess.lower() in dictionary.keys():
-            key = closest_guess
-            value = dictionary[closest_guess.lower()]
+        if len(closest_guesses) > 0:
+            closest_guess = all_names[closest_guesses[0]]
+            if closest_guess in dictionary.keys():
+                key = closest_guess
+                value = dictionary[closest_guess]
+            elif closest_guess in reverse_dictionary.keys():
+                key = reverse_dictionary[closest_guess]
+                value = closest_guess
         else:
-            key = reverse_dictionary[closest_guess.upper()]
-            value = closest_guess.upper()
+            key = default_key_word
+            value = dictionary[default_key_word]
 
-    return key.title(), value.upper()
+    return key, value
 
 
 def collect_crypto_price(event, session):
@@ -45,21 +52,24 @@ def collect_crypto_price(event, session):
 
     slots = event['request']['intent']['slots']
     crypto_currency = slots['cryptocurrency']['value']
-    currency = slots['Currency'].get('value')
+    crypto_currency = slots['cryptocurrency'].get('value', DEFAULT_CRYPTO)
+    currency = slots['Currency'].get('value', DEFAULT_CURRENCY)
 
     with open('cryptocurrencies.json') as cryptocurrency_file:
         SUPPORTED_COINS = json.load(cryptocurrency_file)
     from_currency, from_symbol = get_key_and_value_match(crypto_currency,
-                                                         SUPPORTED_COINS)
+                                                         SUPPORTED_COINS,
+                                                         DEFAULT_CRYPTO)
 
+    with open('currencies.json') as currency_file:
+        SUPPORTED_CURRENCIES = json.load(currency_file)
     if currency:
-        with open('currencies.json') as currency_file:
-            SUPPORTED_CURRENCIES = json.load(currency_file)
         to_currency, to_symbol = get_key_and_value_match(currency,
-                                                         SUPPORTED_CURRENCIES)
+                                                         SUPPORTED_CURRENCIES,
+                                                         DEFAULT_CURRENCY)
     else:
-        to_currency = "US Dollars"
-        to_symbol = "USD"
+        to_currency = DEFAULT_CURRENCY
+        to_symbol = SUPPORTED_CURRENCIES[DEFAULT_CURRENCY]
 
     api_link = API_LINK.format(from_symbol=from_symbol, to_symbols=to_symbol)
     api_response = requests.get(api_link)
