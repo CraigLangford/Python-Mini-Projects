@@ -193,6 +193,8 @@ def add_permission_request(response):
                           "please enable location permissions for crypto "
                           "price in your alexa app")
     response['response']['card'] = permission_card
-    response['response']['outputSpeech']['text'] = permission_message
+    original_message = response['response']['outputSpeech']['text']
+    new_message = original_message + permission_message
+    response['response']['outputSpeech']['text'] = new_message
 
     return response
